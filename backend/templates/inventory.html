@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="simple-page">
+        <header class="simple-header">
+            <h1>Inventory</h1>
+            <a href="{{ url_for('home') }}">Back to Dashboard</a>
+        </header>
+
+        <section class="simple-grid">
+            <article class="info-panel">
+                <div class="panel-head">
+                    <h3>Low Stock</h3>
+                    <span>{{ inventory.low_stock|length }} Items</span>
+                </div>
+                <ul class="plain-list">
+                    {% for item in inventory.low_stock %}
+                    <li>{{ item.medicine_name }} - {{ item.stock }} units left</li>
+                    {% endfor %}
+                    {% if not inventory.low_stock %}
+                    <li>No low-stock medicines found.</li>
+                    {% endif %}
+                </ul>
+            </article>
+
+            <article class="info-panel">
+                <div class="panel-head">
+                    <h3>Expiring Soon</h3>
+                    <span>{{ inventory.expiring_soon|length }} Batches</span>
+                </div>
+                <ul class="plain-list">
+                    {% for item in inventory.expiring_soon %}
+                    <li>{{ item.batch_no }} - {{ item.medicine_name }} expires in {{ item.days_left }} days</li>
+                    {% endfor %}
+                    {% if not inventory.expiring_soon %}
+                    <li>No expiring batches in the next 30 days.</li>
+                    {% endif %}
+                </ul>
+            </article>
+        </section>
+    </div>
+</body>
+</html>

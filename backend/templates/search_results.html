@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="simple-page">
+        <header class="simple-header">
+            <div>
+                <h1>Search Results</h1>
+                <p class="section-copy">Results for: <strong>{{ query or 'All Records' }}</strong></p>
+            </div>
+            <a href="{{ url_for('home') }}">Back to Dashboard</a>
+        </header>
+
+        <section class="info-panel compact-bottom">
+            <div class="panel-head">
+                <h3>Search Again</h3>
+                <span>{{ medicines|length + customers|length }} Results</span>
+            </div>
+            <form class="search-form" method="get" action="{{ url_for('global_search') }}">
+                <!-- Reusing the same route keeps the top-bar and results-page search behavior consistent. -->
+                <input type="text" name="q" placeholder="Search medicines, customers, and more..." value="{{ query }}">
+                <button type="submit">Search</button>
+            </form>
+        </section>
+
+        <section class="info-panel compact-bottom">
+            <div class="panel-head">
+                <h3>Medicines</h3>
+                <span>{{ medicines|length }} Matches</span>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Medicine</th>
+                            <th>Generic Name</th>
+                            <th>Strength</th>
+                            <th>Stock</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for medicine in medicines %}
+                        <tr>
+                            <td>{{ medicine.medicine_id }}</td>
+                            <td>{{ medicine.name }}</td>
+                            <td>{{ medicine.generic_name }}</td>
+                            <td>{{ medicine.strength }}</td>
+                            <td>{{ medicine.stock }}</td>
+                            <td>Rs. {{ medicine.price }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not medicines %}
+                        <tr>
+                            <td colspan="6">No medicine matches found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="info-panel">
+            <div class="panel-head">
+                <h3>Customers</h3>
+                <span>{{ customers|length }} Matches</span>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Loyalty Points</th>
+                            <th>Last Purchase</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr>
+                            <td>{{ customer.customer_id }}</td>
+                            <td>{{ customer.name }}</td>
+                            <td>{{ customer.phone }}</td>
+                            <td>{{ customer.loyalty_points }}</td>
+                            <td>{{ customer.last_purchase }}</td>
+                            <td>{{ customer.status }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not customers %}
+                        <tr>
+                            <td colspan="6">No customer matches found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Medicine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="simple-page">
+        <header class="simple-header">
+            <div>
+                <h1>Search Medicine</h1>
+                <p class="section-copy">Search medicines by product name or generic name.</p>
+            </div>
+            <a href="{{ url_for('home') }}">Back to Dashboard</a>
+        </header>
+
+        <section class="info-panel">
+            <div class="panel-head">
+                <h3>Medicine Search</h3>
+                <span>{{ medicines|length }} Results</span>
+            </div>
+
+            <form class="search-form" method="get" action="{{ url_for('search_medicine') }}">
+                <input type="text" name="q" placeholder="Search by medicine or generic name" value="{{ query }}">
+                <button type="submit">Search</button>
+            </form>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Medicine</th>
+                            <th>Generic Name</th>
+                            <th>Strength</th>
+                            <th>Stock</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for medicine in medicines %}
+                        <tr>
+                            <td>{{ medicine.medicine_id }}</td>
+                            <td>{{ medicine.name }}</td>
+                            <td>{{ medicine.generic_name }}</td>
+                            <td>{{ medicine.strength }}</td>
+                            <td>{{ medicine.stock }}</td>
+                            <td>Rs. {{ medicine.price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

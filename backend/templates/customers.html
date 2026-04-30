@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="simple-page">
+        <header class="simple-header">
+            <div>
+                <h1>Customers</h1>
+                <p class="section-copy">Manage customer records, loyalty, and purchase activity.</p>
+            </div>
+            <a href="{{ url_for('home') }}">Back to Dashboard</a>
+        </header>
+
+        <section class="compact-bottom">
+            <article class="info-panel customer-summary-panel">
+                <div class="panel-head">
+                    <h3>Customer Summary</h3>
+                    <span>Today</span>
+                </div>
+                <div class="customer-summary-grid">
+                    <div class="metric-box">
+                        <strong>{{ customers|length }}</strong>
+                        <span>Total Customers</span>
+                    </div>
+                    <div class="metric-box">
+                        <strong>{{ loyalty_members }}</strong>
+                        <span>Loyalty Members</span>
+                    </div>
+                    <div class="metric-box">
+                        <strong>{{ most_purchased_item }}</strong>
+                        <span>Most Purchased Item</span>
+                    </div>
+                    <div class="metric-box">
+                        <strong>{{ most_loyal_customer.name if most_loyal_customer else '-' }}</strong>
+                        <span>Most Loyal Customer</span>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="info-panel">
+            <div class="panel-head">
+                <h3>Customer Records</h3>
+                <span>Latest entries</span>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Customer ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Loyalty Points</th>
+                            <th>Last Purchase</th>
+                            <th>Status</th>
+                            <th>History</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr>
+                            <td>{{ customer.customer_id }}</td>
+                            <td>{{ customer.name }}</td>
+                            <td>{{ customer.phone }}</td>
+                            <td>{{ customer.loyalty_points }}</td>
+                            <td>{{ customer.last_purchase }}</td>
+                            <td>
+                                <span class="badge {% if customer.status == 'Active' %}success{% elif customer.status == 'Premium' %}info{% else %}neutral{% endif %}">
+                                    {{ customer.status }}
+                                </span>
+                            </td>
+                            <td><a class="text-link" href="{{ url_for('customer_history', customer_id=customer.customer_id) }}">View</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

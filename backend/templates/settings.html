@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="simple-page">
+        <header class="simple-header">
+            <div>
+                <h1>Settings</h1>
+                <p class="section-copy">Basic application preferences for your pharmacy dashboard.</p>
+            </div>
+            <a href="{{ url_for('home') }}">Back to Dashboard</a>
+        </header>
+
+        <section class="settings-grid">
+            <article class="info-panel">
+                <div class="panel-head">
+                    <h3>Store Settings</h3>
+                </div>
+                <div class="settings-list">
+                    <label class="setting-item">
+                        <span>Pharmacy Name</span>
+                        <input type="text" value="Pharma One">
+                    </label>
+                    <label class="setting-item">
+                        <span>Currency</span>
+                        <select>
+                            <option>INR (Rs.)</option>
+                            <option>USD ($)</option>
+                        </select>
+                    </label>
+                    <label class="setting-item">
+                        <span>Language</span>
+                        <select>
+                            <option>English</option>
+                            <option>Hindi</option>
+                        </select>
+                    </label>
+                </div>
+            </article>
+
+            <article class="info-panel">
+                <div class="panel-head">
+                    <h3>Billing Preferences</h3>
+                </div>
+                <div class="settings-list">
+                    <label class="check-item"><input type="checkbox" checked> Enable GST on bills</label>
+                    <label class="check-item"><input type="checkbox" checked> Print invoice after bill generation</label>
+                    <label class="check-item"><input type="checkbox"> Allow manual discount override</label>
+                    <label class="check-item"><input type="checkbox" checked> Show stock warning during billing</label>
+                </div>
+            </article>
+
+            <article class="info-panel">
+                <div class="panel-head">
+                    <h3>Inventory Controls</h3>
+                </div>
+                <div class="settings-list">
+                    <label class="setting-item">
+                        <span>Low Stock Threshold</span>
+                        <input type="number" value="10">
+                    </label>
+                    <label class="setting-item">
+                        <span>Expiry Alert Window (days)</span>
+                        <input type="number" value="30">
+                    </label>
+                    <label class="check-item"><input type="checkbox" checked> Block expired medicine sale</label>
+                </div>
+            </article>
+
+            <article class="info-panel">
+                <div class="panel-head">
+                    <h3>Account</h3>
+                </div>
+                <div class="settings-list">
+                    <label class="setting-item">
+                        <span>Admin Username</span>
+                        <input type="text" value="subash_admin">
+                    </label>
+                    <button class="primary-btn">Save Settings</button>
+                    <button class="ghost-btn">Reset Defaults</button>
+                </div>
+            </article>
+        </section>
+    </div>
+</body>
+</html>

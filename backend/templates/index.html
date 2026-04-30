@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">+</div>
+                <div>
+                    <h1>Pharma One</h1>
+                    <p>Pharmacy Management</p>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <div class="avatar">S</div>
+                <div>
+                    <strong>Subash</strong>
+                    <p>Super Admin</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a class="active" href="{{ url_for('home') }}">Dashboard</a>
+                <a href="{{ url_for('inventory_page') }}">Inventory</a>
+                <a href="{{ url_for('reports_page') }}">Reports</a>
+                <a href="{{ url_for('billing_page') }}">Billing</a>
+                <a href="{{ url_for('view_customers') }}">Customers</a>
+                <a href="{{ url_for('settings_page') }}">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <form class="search-wrap topbar-search" method="get" action="{{ url_for('global_search') }}">
+                    <!-- The top-bar search is global, so it submits into the shared search route. -->
+                    <input type="text" name="q" placeholder="Search medicines, customers, and more...">
+                </form>
+                <div class="topbar-right">
+                    <span>English (US)</span>
+                    <span id="dateTime"></span>
+                </div>
+            </header>
+
+            <section class="page-head">
+                <div>
+                    <h2>Dashboard</h2>
+                    <p>A quick data overview of the inventory and pharmacy operations.</p>
+                </div>
+                <button class="ghost-btn">Download Report</button>
+            </section>
+
+            <section class="stats-grid">
+                <article class="stat-card green">
+                    <div class="stat-icon">+</div>
+                    <h3>{{ stats.inventory_status }}</h3>
+                    <p>Inventory Status</p>
+                    <a href="{{ url_for('reports_page') }}">View Detailed Report</a>
+                </article>
+
+                <article class="stat-card yellow">
+                    <div class="stat-icon">Rs</div>
+                    <h3>{{ '{:,.0f}'.format(stats.monthly_revenue) }}</h3>
+                    <p>Revenue in Current Month</p>
+                    <a href="{{ url_for('billing_page') }}">View Revenue</a>
+                </article>
+
+                <article class="stat-card blue">
+                    <div class="stat-icon">+</div>
+                    <h3>{{ stats.total_medicines }}</h3>
+                    <p>Medicines Available</p>
+                    <a href="{{ url_for('inventory_page') }}">Visit Inventory</a>
+                </article>
+
+                <article class="stat-card red">
+                    <div class="stat-icon">!</div>
+                    <h3>{{ stats.shortage_count }}</h3>
+                    <p>Medicine Shortage</p>
+                    <a href="{{ url_for('inventory_page') }}">Resolve Now</a>
+                </article>
+            </section>
+
+            <section class="panel-grid">
+                <article class="info-panel">
+                    <div class="panel-head">
+                        <h3>Inventory</h3>
+                        <a href="{{ url_for('inventory_page') }}">Go to Inventory</a>
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric-box">
+                            <strong>{{ stats.total_medicines }}</strong>
+                            <span>Total no of Medicines</span>
+                        </div>
+                        <div class="metric-box">
+                            <strong>{{ stats.medicine_groups }}</strong>
+                            <span>Medicine Groups</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="info-panel">
+                    <div class="panel-head">
+                        <h3>Quick Report</h3>
+                        <span>Current Month</span>
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric-box">
+                            <strong>{{ stats.medicines_sold }}</strong>
+                            <span>Qty of Medicines Sold</span>
+                        </div>
+                        <div class="metric-box">
+                            <strong>{{ stats.invoices_generated }}</strong>
+                            <span>Invoices Generated</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="info-panel">
+                    <div class="panel-head">
+                        <h3>My Pharmacy</h3>
+                        <a href="#">Go to Supplier View</a>
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric-box">
+                            <strong>{{ stats.total_suppliers }}</strong>
+                            <span>Total no of Suppliers</span>
+                        </div>
+                        <div class="metric-box">
+                            <strong>{{ stats.total_users }}</strong>
+                            <span>Total no of Users</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="info-panel">
+                    <div class="panel-head">
+                        <h3>Customers</h3>
+                        <a href="{{ url_for('view_customers') }}">Go to Customers Page</a>
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric-box">
+                            <strong>{{ stats.total_customers }}</strong>
+                            <span>Total no of Customers</span>
+                        </div>
+                        <div class="metric-box">
+                            <strong>{{ stats.frequently_bought_item }}</strong>
+                            <span>Frequently bought item</span>
+                        </div>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

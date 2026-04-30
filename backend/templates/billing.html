@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="simple-page">
+        <header class="simple-header">
+            <h1>Billing</h1>
+            <a href="{{ url_for('home') }}">Back to Dashboard</a>
+        </header>
+
+        <section class="billing-layout">
+            <article class="info-panel">
+                <div class="panel-head">
+                    <h3>Create Bill</h3>
+                </div>
+                <div class="customer-type-toggle">
+                    <!-- These buttons reflect the two real pharmacy billing flows. -->
+                    <button type="button" class="mode-btn active" data-mode="existing" onclick="setCustomerMode('existing')">Existing Customer</button>
+                    <button type="button" class="mode-btn" data-mode="new" onclick="setCustomerMode('new')">New Customer</button>
+                </div>
+                <div class="form-grid">
+                    <input type="text" id="customerIdField" placeholder="Customer ID">
+                    <input type="text" id="customerNameField" class="is-hidden" placeholder="Customer Name">
+                    <input type="text" id="customerPhoneField" class="is-hidden" placeholder="Customer Phone">
+                </div>
+                <div class="panel-head nested-head">
+                    <h3>Bill Items</h3>
+                    <div class="bill-header-actions">
+                        <button type="button" class="item-action-btn plus-btn" onclick="addBillItem()">+</button>
+                        <button type="button" class="item-action-btn minus-btn" onclick="removeLastBillItem()">-</button>
+                    </div>
+                </div>
+                <div id="billItemsContainer" class="bill-items-list">
+                    <div class="bill-item-row">
+                        <select class="bill-item-name" onchange="updateBatchOptions(this)">
+                            <option value="">Select Medicine</option>
+                            {% for medicine in medicine_options %}
+                            <option value="{{ medicine.name }}">{{ medicine.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <select class="bill-item-batch">
+                            <option value="">Select Batch</option>
+                        </select>
+                        <input type="number" class="bill-item-qty" min="1" placeholder="Quantity">
+                    </div>
+                </div>
+                <script id="billingMedicineData" type="application/json">{{ medicine_options|tojson }}</script>
+                <button class="primary-btn" onclick="previewBill()">Preview Bill</button>
+            </article>
+
+            <article class="info-panel">
+                <div class="panel-head">
+                    <h3>Bill Preview</h3>
+                </div>
+                <div id="billPreview" class="preview-box">No items added yet.</div>
+            </article>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/billing.js') }}"></script>
+</body>
+</html>

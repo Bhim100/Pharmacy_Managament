@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="simple-page">
+        <header class="simple-header">
+            <div>
+                <h1>Customer Purchase History</h1>
+                <p class="section-copy">{{ customer.name if customer else 'Customer not found' }}</p>
+            </div>
+            <a href="{{ url_for('view_customers') }}">Back to Customers</a>
+        </header>
+
+        <section class="info-panel">
+            <div class="panel-head">
+                <h3>Purchase Records</h3>
+                <span>{{ history|length }} Bills</span>
+            </div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Bill ID</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in history %}
+                        <tr>
+                            <td>{{ record.bill_id }}</td>
+                            <td>{{ record.bill_date }}</td>
+                            <td>{{ record["items"] }}</td>
+                            <td>Rs. {{ record.amount }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not history %}
+                        <tr>
+                            <td colspan="4">No purchase history found for this customer.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

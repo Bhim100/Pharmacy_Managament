@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="simple-page">
+        <header class="simple-header">
+            <h1>Reports</h1>
+            <a href="{{ url_for('home') }}">Back to Dashboard</a>
+        </header>
+
+        <section class="report-stack">
+            <article class="info-panel compact-bottom">
+                <div class="panel-head">
+                    <h3>Sales Report</h3>
+                    <span>Current Month</span>
+                </div>
+                <div class="metric-row compact-bottom">
+                    <div class="metric-box">
+                        <strong>{{ '{:,.0f}'.format(reports.sales.monthly_revenue) }}</strong>
+                        <span>Revenue</span>
+                    </div>
+                    <div class="metric-box">
+                        <strong>{{ reports.sales.invoices_generated }}</strong>
+                        <span>Invoices</span>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Units Sold</th>
+                                <th>Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in reports.sales.top_selling %}
+                            <tr>
+                                <td>{{ item.medicine_name }}</td>
+                                <td>{{ item.units_sold }}</td>
+                                <td>Rs. {{ item.revenue }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% if not reports.sales.top_selling %}
+                            <tr>
+                                <td colspan="3">No sales report data found.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="info-panel compact-bottom">
+                <div class="panel-head">
+                    <h3>Inventory Report</h3>
+                    <span>Live Stock Overview</span>
+                </div>
+                <div class="report-grid-2">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Low Stock Medicine</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in reports.inventory.low_stock %}
+                                <tr>
+                                    <td>{{ item.medicine_name }}</td>
+                                    <td>{{ item.stock }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% if not reports.inventory.low_stock %}
+                                <tr>
+                                    <td colspan="2">No low-stock medicines found.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Expiring Batch</th>
+                                    <th>Days Left</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in reports.inventory.expiring_soon %}
+                                <tr>
+                                    <td>{{ item.batch_no }} - {{ item.medicine_name }}</td>
+                                    <td>{{ item.days_left }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% if not reports.inventory.expiring_soon %}
+                                <tr>
+                                    <td colspan="2">No expiring stock found.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </article>
+
+            <article class="info-panel">
+                <div class="panel-head">
+                    <h3>Customer Report</h3>
+                    <span>Top Customers</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Visits</th>
+                                <th>Total Spent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for customer in reports.customers.top_customers %}
+                            <tr>
+                                <td>{{ customer.customer_name }}</td>
+                                <td>{{ customer.visits }}</td>
+                                <td>Rs. {{ customer.spent }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% if not reports.customers.top_customers %}
+                            <tr>
+                                <td colspan="3">No customer report data found.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+    </div>
+</body>
+</html>
