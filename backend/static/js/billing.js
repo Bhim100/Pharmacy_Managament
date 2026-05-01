@@ -16,8 +16,9 @@ function updateBatchOptions(medicineSelect) {
 
     batches.forEach((batch) => {
         const option = document.createElement("option");
-        option.value = batch;
-        option.textContent = batch;
+        option.value = batch.batch_no;
+        option.textContent = `${batch.batch_no} (Rs. ${batch.price})`;
+        option.dataset.price = batch.price; // Store price for calculations
         batchSelect.appendChild(option);
     });
 }
@@ -60,20 +61,37 @@ function previewBill() {
 
     const previewItems = [];
     let totalQuantity = 0;
+    let grossAmount = 0;
 
     // Each visible bill row contributes one preview line so multiple medicines can be reviewed together.
     billItemRows.forEach((row, index) => {
         const medicineName = row.querySelector(".bill-item-name").value || `Medicine ${index + 1}`;
-        const batchNo = row.querySelector(".bill-item-batch").value || "Batch not selected";
+        const batchSelect = row.querySelector(".bill-item-batch");
+        const batchNo = batchSelect.value || "Batch not selected";
         const quantity = Number(row.querySelector(".bill-item-qty").value || 1);
+
+        let price = 0;
+        let lineTotal = 0;
+        if (batchSelect.selectedIndex > 0) {
+            price = Number(batchSelect.options[batchSelect.selectedIndex].dataset.price);
+            lineTotal = price * quantity;
+            grossAmount += lineTotal;
+        }
 
         totalQuantity += quantity;
         previewItems.push(`
             <li>
-                <strong>${medicineName}</strong> | Batch: ${batchNo} | Qty: ${quantity}
+                <div style="display: flex; justify-content: space-between;">
+                    <span><strong>${medicineName}</strong> (Batch: ${batchNo}) x ${quantity}</span>
+                    <span>Rs. ${lineTotal.toFixed(2)}</span>
+                </div>
+                <small style="color: var(--text-light);">Rs. ${price.toFixed(2)} per unit</small>
             </li>
         `);
     });
+
+    const taxAmount = grossAmount * 0.05;
+    const netAmount = grossAmount + taxAmount;
 
     preview.innerHTML = `
         <div class="preview-header">
@@ -92,10 +110,65 @@ function previewBill() {
         </div>
         <div class="preview-summary">
             <div><span>Total Quantity</span><strong>${totalQuantity}</strong></div>
-            <div><span>Discount</span><strong>Rs. 5</strong></div>
-            <div><span>Total</span><strong>Rs. 55</strong></div>
+            <div><span>Subtotal</span><strong>Rs. ${grossAmount.toFixed(2)}</strong></div>
+            <div><span>Tax (5%)</span><strong>Rs. ${taxAmount.toFixed(2)}</strong></div>
+            <div style="font-size: 1.1em; color: var(--primary);"><span>Net Total</span><strong>Rs. ${netAmount.toFixed(2)}</strong></div>
         </div>
+        <button class="primary-btn" style="width: 100%; margin-top: 20px;" onclick="submitBill()">Confirm Checkout</button>
     `;
+}
+
+async function submitBill() {
+    const customerIdField = document.getElementById("customerIdField");
+    const customerNameField = document.getElementById("customerNameField");
+    const customerPhoneField = document.getElementById("customerPhoneField");
+    const billItemRows = document.querySelectorAll(".bill-item-row");
+
+    const items = [];
+    billItemRows.forEach((row) => {
+        const medicineName = row.querySelector(".bill-item-name").value;
+        const batchNo = row.querySelector(".bill-item-batch").value;
+        const quantity = Number(row.querySelector(".bill-item-qty").value || 0);
+        if (medicineName && batchNo && quantity > 0) {
+            items.push({ medicine_name: medicineName, batch_no: batchNo, quantity });
+        }
+    });
+
+    if (items.length === 0) {
+        alert("Please add at least one valid item with a quantity greater than 0.");
+        return;
+    }
+
+    const customerData = {
+        customer_id: customerIdField.value,
+        customer_name: customerNameField.value,
+        customer_phone: customerPhoneField.value,
+    };
+
+    try {
+        const response = await fetch("/api/billing/checkout", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                customer_mode: customerMode,
+                customer_data: customerData,
+                items: items,
+            }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert("Bill successfully created! Bill ID: " + result.bill_id);
+            window.location.reload(); // Refresh to clear form and update stock
+        } else {
+            alert("Checkout failed: " + result.message);
+        }
+    } catch (error) {
+        console.error("Error during checkout:", error);
+        alert("An error occurred during checkout.");
+    }
 }
 
 function addBillItem() {

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
+
 <body>
     <div class="simple-page">
         <header class="simple-header">
@@ -16,76 +18,92 @@
             <a href="{{ url_for('home') }}">Back to Dashboard</a>
         </header>
 
-        <section class="settings-grid">
-            <article class="info-panel">
-                <div class="panel-head">
-                    <h3>Store Settings</h3>
-                </div>
-                <div class="settings-list">
-                    <label class="setting-item">
-                        <span>Pharmacy Name</span>
-                        <input type="text" value="Pharma One">
-                    </label>
-                    <label class="setting-item">
-                        <span>Currency</span>
-                        <select>
-                            <option>INR (Rs.)</option>
-                            <option>USD ($)</option>
-                        </select>
-                    </label>
-                    <label class="setting-item">
-                        <span>Language</span>
-                        <select>
-                            <option>English</option>
-                            <option>Hindi</option>
-                        </select>
-                    </label>
-                </div>
-            </article>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div style="background: #e6f4ea; color: #1e8e3e; padding: 14px; border-radius: 6px; margin-bottom: 18px; border: 1px solid #ceead6; font-weight: 500;">
+                ✓ {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
 
-            <article class="info-panel">
-                <div class="panel-head">
-                    <h3>Billing Preferences</h3>
-                </div>
-                <div class="settings-list">
-                    <label class="check-item"><input type="checkbox" checked> Enable GST on bills</label>
-                    <label class="check-item"><input type="checkbox" checked> Print invoice after bill generation</label>
-                    <label class="check-item"><input type="checkbox"> Allow manual discount override</label>
-                    <label class="check-item"><input type="checkbox" checked> Show stock warning during billing</label>
-                </div>
-            </article>
+        <!-- Single form covers all panels so Save and Reset work together -->
+        <form method="post" action="{{ url_for('settings_page') }}">
+            <input type="hidden" name="action" id="form-action" value="save">
 
-            <article class="info-panel">
-                <div class="panel-head">
-                    <h3>Inventory Controls</h3>
-                </div>
-                <div class="settings-list">
-                    <label class="setting-item">
-                        <span>Low Stock Threshold</span>
-                        <input type="number" value="10">
-                    </label>
-                    <label class="setting-item">
-                        <span>Expiry Alert Window (days)</span>
-                        <input type="number" value="30">
-                    </label>
-                    <label class="check-item"><input type="checkbox" checked> Block expired medicine sale</label>
-                </div>
-            </article>
+            <section class="settings-grid">
+                <article class="info-panel">
+                    <div class="panel-head">
+                        <h3>Store Settings</h3>
+                    </div>
+                    <div class="settings-list">
+                        <label class="setting-item">
+                            <span>Pharmacy Name</span>
+                            <input type="text" name="pharmacy_name" value="{{ settings.pharmacy_name | default('Pharma One') }}">
+                        </label>
+                        <label class="setting-item">
+                            <span>Currency</span>
+                            <select>
+                                <option>INR (Rs.)</option>
+                                <option>USD ($)</option>
+                            </select>
+                        </label>
+                        <label class="setting-item">
+                            <span>Language</span>
+                            <select>
+                                <option>English</option>
+                                <option>Hindi</option>
+                            </select>
+                        </label>
+                    </div>
+                </article>
 
-            <article class="info-panel">
-                <div class="panel-head">
-                    <h3>Account</h3>
-                </div>
-                <div class="settings-list">
-                    <label class="setting-item">
-                        <span>Admin Username</span>
-                        <input type="text" value="subash_admin">
-                    </label>
-                    <button class="primary-btn">Save Settings</button>
-                    <button class="ghost-btn">Reset Defaults</button>
-                </div>
-            </article>
-        </section>
+                <article class="info-panel">
+                    <div class="panel-head">
+                        <h3>Billing Preferences</h3>
+                    </div>
+                    <div class="settings-list">
+                        <label class="check-item"><input type="checkbox" checked> Enable GST on bills</label>
+                        <label class="check-item"><input type="checkbox" checked> Print invoice after bill generation</label>
+                        <label class="check-item"><input type="checkbox"> Allow manual discount override</label>
+                        <label class="check-item"><input type="checkbox" checked> Show stock warning during billing</label>
+                    </div>
+                </article>
+
+                <article class="info-panel">
+                    <div class="panel-head">
+                        <h3>Inventory Controls</h3>
+                    </div>
+                    <div class="settings-list">
+                        <label class="setting-item">
+                            <span>Low Stock Threshold</span>
+                            <input type="number" name="low_stock_threshold" value="{{ settings.low_stock_threshold | default(10) }}" min="1">
+                        </label>
+                        <label class="setting-item">
+                            <span>Expiry Alert Window (days)</span>
+                            <input type="number" name="expiry_alert_days" value="{{ settings.expiry_alert_days | default(30) }}" min="1">
+                        </label>
+                        <label class="check-item"><input type="checkbox" checked> Block expired medicine sale</label>
+                    </div>
+                </article>
+
+                <article class="info-panel">
+                    <div class="panel-head">
+                        <h3>Account</h3>
+                    </div>
+                    <div class="settings-list">
+                        <label class="setting-item">
+                            <span>Admin Username / Name</span>
+                            <input type="text" name="admin_username" value="{{ settings.admin_username | default('Subash') }}">
+                        </label>
+                        <button type="submit" class="primary-btn" onclick="document.getElementById('form-action').value='save'">Save Settings</button>
+                        <button type="submit" class="ghost-btn" onclick="document.getElementById('form-action').value='reset'">Reset Defaults</button>
+                    </div>
+                </article>
+            </section>
+        </form>
     </div>
 </body>
+
 </html>

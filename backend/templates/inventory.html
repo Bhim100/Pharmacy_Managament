@@ -9,9 +9,25 @@
 <body>
     <div class="simple-page">
         <header class="simple-header">
-            <h1>Inventory</h1>
-            <a href="{{ url_for('home') }}">Back to Dashboard</a>
+            <div>
+                <h1>Inventory</h1>
+                <p class="section-copy">Manage your medicine stock and track expiries.</p>
+            </div>
+            <div>
+                <a href="{{ url_for('add_stock_page') }}">+ Add Stock</a>
+                <a href="{{ url_for('home') }}" style="margin-left: 15px;">Back to Dashboard</a>
+            </div>
         </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div style="background-color: #e6f4ea; color: #1e8e3e; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ceead6; font-weight: 500;">
+                ✓ {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
 
         <section class="simple-grid">
             <article class="info-panel">
@@ -21,7 +37,11 @@
                 </div>
                 <ul class="plain-list">
                     {% for item in inventory.low_stock %}
-                    <li>{{ item.medicine_name }} - {{ item.stock }} units left</li>
+                    <li>
+                        <strong>{{ item.medicine_name }}</strong> - {{ item.stock }} units left
+                        <br>
+                        <small>Reorder from: {{ item.supplier_name }} ({{ item.supplier_phone }})</small>
+                    </li>
                     {% endfor %}
                     {% if not inventory.low_stock %}
                     <li>No low-stock medicines found.</li>
@@ -31,17 +51,64 @@
 
             <article class="info-panel">
                 <div class="panel-head">
-                    <h3>Expiring Soon</h3>
+                    <h3>Expiry Tracking</h3>
                     <span>{{ inventory.expiring_soon|length }} Batches</span>
                 </div>
                 <ul class="plain-list">
                     {% for item in inventory.expiring_soon %}
-                    <li>{{ item.batch_no }} - {{ item.medicine_name }} expires in {{ item.days_left }} days</li>
+                    <li style="display: flex; justify-content: space-between; align-items: center; {% if item.days_left < 0 %}color: red;{% endif %}">
+                        <span>
+                            {{ item.batch_no }} - {{ item.medicine_name }}
+                            {% if item.days_left < 0 %}
+                                — ALREADY EXPIRED ({{ item.days_left | abs }} days ago)
+                            {% elif item.days_left == 0 %}
+                                — EXPIRES TODAY!
+                            {% else %}
+                                — expires in {{ item.days_left }} days
+                            {% endif %}
+                        </span>
+                        <form method="post" action="{{ url_for('remove_batch') }}" style="margin: 0;" onsubmit="return confirm('Remove batch {{ item.batch_no }}? This cannot be undone.');">
+                            <input type="hidden" name="batch_no" value="{{ item.batch_no }}">
+                            <button type="submit" style="background: transparent; border: 1px solid #ccc; border-radius: 4px; color: #888; font-size: 0.8em; padding: 3px 8px; cursor: pointer; font-weight: bold;">Remove</button>
+                        </form>
+                    </li>
                     {% endfor %}
                     {% if not inventory.expiring_soon %}
                     <li>No expiring batches in the next 30 days.</li>
                     {% endif %}
                 </ul>
+            </article>
+
+            <article class="info-panel" style="grid-column: 1 / -1;">
+                <div class="panel-head">
+                    <h3>All Medicines in Stock</h3>
+                    <span>{{ inventory.all_stock|length }} Batches</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Medicine Name</th>
+                                <th>Batch No</th>
+                                <th>Quantity in Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in inventory.all_stock %}
+                            <tr>
+                                <td>{{ item.medicine_name }}</td>
+                                <td>{{ item.batch_no }}</td>
+                                <td>{{ item.stock }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% if not inventory.all_stock %}
+                            <tr>
+                                <td colspan="3" style="text-align: center;">No stock available.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </article>
         </section>
     </div>

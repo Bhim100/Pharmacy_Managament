@@ -11,6 +11,11 @@ SAMPLE_REPORTS = {
             {"medicine_name": "Amoxycillin", "units_sold": 940, "revenue": 79900},
             {"medicine_name": "VitaPlus", "units_sold": 615, "revenue": 73800},
         ],
+        "sales_by_category": [
+            {"category_name": "Painkillers", "revenue": 54600, "percent": 26.2},
+            {"category_name": "Antibiotics", "revenue": 79900, "percent": 38.3},
+            {"category_name": "Vitamins", "revenue": 73800, "percent": 35.5},
+        ]
     },
     "inventory": {
         "low_stock": [
@@ -63,6 +68,24 @@ def get_reports_summary():
             )
             top_selling = [
                 {"medicine_name": row[0], "units_sold": row[1], "revenue": row[2]}
+                for row in cursor.fetchall()
+            ]
+
+            cursor.execute(
+                """
+                SELECT 
+                    c.category_name, 
+                    SUM(bi.line_total) AS category_revenue,
+                    ROUND(SUM(bi.line_total) / (SELECT SUM(line_total) FROM bill_items WHERE line_total > 0) * 100, 2) AS percent_of_total
+                FROM bill_items bi
+                JOIN medicines m ON bi.medicine_id = m.medicine_id
+                JOIN categories c ON m.category_id = c.category_id
+                GROUP BY c.category_name
+                ORDER BY category_revenue DESC
+                """
+            )
+            sales_by_category = [
+                {"category_name": row[0], "revenue": row[1] or 0, "percent": row[2] or 0}
                 for row in cursor.fetchall()
             ]
 
@@ -120,6 +143,7 @@ def get_reports_summary():
                     "monthly_revenue": monthly_revenue,
                     "invoices_generated": invoices_generated,
                     "top_selling": top_selling,
+                    "sales_by_category": sales_by_category,
                 },
                 "inventory": {
                     "low_stock": low_stock,
@@ -129,3 +153,52 @@ def get_reports_summary():
                     "top_customers": top_customers,
                 },
             }
+
+def get_sales_report_for_export():
+    """Fetch all sales data for CSV export."""
+    connection = get_connection()
+    if not connection:
+        return []
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT b.bill_id, c.customer_name, b.bill_date, b.total_amount, b.tax_amount, b.net_amount
+                FROM bills b
+                JOIN customers c ON b.customer_id = c.customer_id
+                ORDER BY b.bill_date DESC
+                """
+            )
+            return [
+                {
+                    "Bill ID": row[0],
+                    "Customer": row[1],
+                    "Date": row[2].strftime('%Y-%m-%d %H:%M'),
+                    "Total": row[3],
+                    "Tax": row[4],
+                    "Net Amount": row[5]
+                } for row in cursor.fetchall()
+            ]
+
+def get_customer_report_for_export():
+    """Fetch all customer data for CSV export."""
+    connection = get_connection()
+    if not connection:
+        return []
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT customer_name, phone, loyalty_points, created_at
+                FROM customers
+                ORDER BY loyalty_points DESC
+                """
+            )
+            return [
+                {
+                    "Name": row[0],
+                    "Phone": row[1] or "N/A",
+                    "Loyalty Points": row[2],
+                    "Joined Date": row[3].strftime('%Y-%m-%d')
+                } for row in cursor.fetchall()
+            ]

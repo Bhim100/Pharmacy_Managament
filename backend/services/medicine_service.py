@@ -47,15 +47,21 @@ def search_medicines(query):
                     m.medicine_id,
                     m.medicine_name,
                     NVL(m.generic_name, '-') AS generic_name,
-                    NVL(m.strength, '-') AS strength,
+                    NVL(c.category_name, '-') AS category_name,
+                    NVL(s.supplier_name, '-') AS supplier_name,
                     NVL(SUM(b.quantity_in_stock), 0) AS stock,
                     NVL(m.unit_price, 0) AS unit_price
                 FROM medicines m
                 LEFT JOIN batches b ON b.medicine_id = m.medicine_id
+                LEFT JOIN categories c ON m.category_id = c.category_id
+                LEFT JOIN suppliers s ON m.supplier_id = s.supplier_id
                 WHERE :search_text IS NULL
                    OR LOWER(m.medicine_name) LIKE '%' || :search_text || '%'
                    OR LOWER(NVL(m.generic_name, '')) LIKE '%' || :search_text || '%'
-                GROUP BY m.medicine_id, m.medicine_name, m.generic_name, m.strength, m.unit_price
+                   OR LOWER(NVL(c.category_name, '')) LIKE '%' || :search_text || '%'
+                   OR LOWER(NVL(s.supplier_name, '')) LIKE '%' || :search_text || '%'
+                   OR TO_CHAR(m.medicine_id) LIKE '%' || :search_text || '%'
+                GROUP BY m.medicine_id, m.medicine_name, m.generic_name, c.category_name, s.supplier_name, m.unit_price
                 ORDER BY m.medicine_name
                 """,
                 search_text=clean_query or None,
@@ -68,9 +74,10 @@ def search_medicines(query):
                         "medicine_id": row[0],
                         "name": row[1],
                         "generic_name": row[2],
-                        "strength": row[3],
-                        "stock": row[4],
-                        "price": row[5],
+                        "category_name": row[3],
+                        "supplier_name": row[4],
+                        "stock": row[5],
+                        "price": row[6],
                     }
                 )
 

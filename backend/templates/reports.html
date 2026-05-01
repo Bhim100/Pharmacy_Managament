@@ -16,8 +16,11 @@
         <section class="report-stack">
             <article class="info-panel compact-bottom">
                 <div class="panel-head">
-                    <h3>Sales Report</h3>
-                    <span>Current Month</span>
+                    <div>
+                        <h3>Sales Report</h3>
+                        <span>Current Month</span>
+                    </div>
+                    <a href="{{ url_for('download_sales_report') }}" class="ghost-btn" style="font-size: 0.8em; padding: 4px 10px;">Download CSV</a>
                 </div>
                 <div class="metric-row compact-bottom">
                     <div class="metric-box">
@@ -29,37 +32,74 @@
                         <span>Invoices</span>
                     </div>
                 </div>
-                <div class="table-wrap">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Medicine</th>
-                                <th>Units Sold</th>
-                                <th>Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in reports.sales.top_selling %}
-                            <tr>
-                                <td>{{ item.medicine_name }}</td>
-                                <td>{{ item.units_sold }}</td>
-                                <td>Rs. {{ item.revenue }}</td>
-                            </tr>
-                            {% endfor %}
-                            {% if not reports.sales.top_selling %}
-                            <tr>
-                                <td colspan="3">No sales report data found.</td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
+                <div class="report-grid-2">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Top Medicine</th>
+                                    <th>Units Sold</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in reports.sales.top_selling %}
+                                <tr>
+                                    <td>{{ item.medicine_name }}</td>
+                                    <td>{{ item.units_sold }}</td>
+                                    <td>Rs. {{ item.revenue }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% if not reports.sales.top_selling %}
+                                <tr>
+                                    <td colspan="3">No sales report data found.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Revenue</th>
+                                    <th>% of Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in reports.sales.sales_by_category %}
+                                <tr>
+                                    <td>{{ item.category_name }}</td>
+                                    <td>Rs. {{ item.revenue }}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <div style="flex: 1; background: var(--border); height: 8px; border-radius: 4px; overflow: hidden;">
+                                                <div style="width: {{ item.percent }}%; background: var(--primary); height: 100%;"></div>
+                                            </div>
+                                            <span style="min-width: 45px; text-align: right;">{{ item.percent }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not reports.sales.sales_by_category %}
+                                <tr>
+                                    <td colspan="3">No category data found.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </article>
 
             <article class="info-panel compact-bottom">
                 <div class="panel-head">
-                    <h3>Inventory Report</h3>
-                    <span>Live Stock Overview</span>
+                    <div>
+                        <h3>Inventory Report</h3>
+                        <span>Live Stock Overview</span>
+                    </div>
+                    <a href="{{ url_for('download_inventory_report') }}" class="ghost-btn" style="font-size: 0.8em; padding: 4px 10px;">Download CSV</a>
                 </div>
                 <div class="report-grid-2">
                     <div class="table-wrap">
@@ -113,8 +153,11 @@
 
             <article class="info-panel">
                 <div class="panel-head">
-                    <h3>Customer Report</h3>
-                    <span>Top Customers</span>
+                    <div>
+                        <h3>Customer Report</h3>
+                        <span>Top Customers</span>
+                    </div>
+                    <a href="{{ url_for('download_customer_report') }}" class="ghost-btn" style="font-size: 0.8em; padding: 4px 10px;">Download CSV</a>
                 </div>
                 <div class="table-wrap">
                     <table class="data-table">

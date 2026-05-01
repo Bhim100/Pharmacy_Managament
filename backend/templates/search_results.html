@@ -40,7 +40,8 @@
                             <th>ID</th>
                             <th>Medicine</th>
                             <th>Generic Name</th>
-                            <th>Strength</th>
+                            <th>Category</th>
+                            <th>Supplier</th>
                             <th>Stock</th>
                             <th>Price</th>
                         </tr>
@@ -51,14 +52,15 @@
                             <td>{{ medicine.medicine_id }}</td>
                             <td>{{ medicine.name }}</td>
                             <td>{{ medicine.generic_name }}</td>
-                            <td>{{ medicine.strength }}</td>
+                            <td>{{ medicine.category_name }}</td>
+                            <td>{{ medicine.supplier_name }}</td>
                             <td>{{ medicine.stock }}</td>
                             <td>Rs. {{ medicine.price }}</td>
                         </tr>
                         {% endfor %}
                         {% if not medicines %}
                         <tr>
-                            <td colspan="6">No medicine matches found.</td>
+                            <td colspan="7">No medicine matches found.</td>
                         </tr>
                         {% endif %}
                     </tbody>

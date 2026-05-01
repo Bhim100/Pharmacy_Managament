@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Supplier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <style>
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.9em;
+        }
+        .form-group input {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95em;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            border-color: #148bb1;
+        }
+        .full-width { grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+    <div class="simple-page">
+        <header class="simple-header">
+            <div>
+                <h1>Add New Supplier</h1>
+                <p class="section-copy">Register a new supplier into the pharmacy network.</p>
+            </div>
+            <a href="{{ url_for('suppliers_page') }}">Back to Suppliers</a>
+        </header>
+
+        <section class="info-panel" style="max-width: 800px; margin: 0 auto;">
+            <div class="panel-head">
+                <h3>Supplier Details</h3>
+            </div>
+            <form method="post" action="{{ url_for('add_supplier_page') }}" style="padding: 20px;">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="supplier_name">Supplier / Company Name</label>
+                        <input type="text" name="supplier_name" id="supplier_name" required placeholder="e.g. PharmaCorp Ltd.">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact_person">Contact Person</label>
+                        <input type="text" name="contact_person" id="contact_person" placeholder="e.g. Rahul Sharma">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" name="phone" id="phone" placeholder="e.g. 9876543210">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" name="email" id="email" placeholder="e.g. rahul@pharmacorp.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" name="city" id="city" placeholder="e.g. Delhi">
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 10px;">
+                    <a href="{{ url_for('suppliers_page') }}" class="ghost-btn" style="text-decoration: none;">Cancel</a>
+                    <button type="submit" class="primary-btn">Save Supplier</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</body>
+</html>

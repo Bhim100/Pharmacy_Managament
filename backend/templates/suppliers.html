@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-mark">+</div>
+                <div>
+                    <h1>Pharma One</h1>
+                    <p>Pharmacy Management</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('home') }}">Dashboard</a>
+                <a href="{{ url_for('inventory_page') }}">Inventory</a>
+                <a href="{{ url_for('reports_page') }}">Reports</a>
+                <a href="{{ url_for('billing_page') }}">Billing</a>
+                <a href="{{ url_for('view_customers') }}">Customers</a>
+                <a class="active" href="{{ url_for('suppliers_page') }}">Suppliers</a>
+                <a href="{{ url_for('settings_page') }}">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <form class="search-wrap topbar-search" method="get" action="{{ url_for('global_search') }}">
+                    <input type="text" name="q" placeholder="Search medicines, customers, and more...">
+                </form>
+                <div class="topbar-right">
+                    <span>English (US)</span>
+                    <span id="dateTime"></span>
+                </div>
+            </header>
+
+            <section class="page-head">
+                <div>
+                    <h2>Suppliers</h2>
+                    <p>Manage your pharmacy's network of medicine suppliers.</p>
+                </div>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <a href="{{ url_for('add_supplier_page') }}" style="color: #148bb1; font-weight: 600;">+ Add Supplier</a>
+                    <a href="{{ url_for('home') }}" style="color: #148bb1; font-weight: 600;">Back to Dashboard</a>
+                </div>
+            </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div style="background-color: #e6f4ea; color: #1e8e3e; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ceead6; font-weight: 500;">
+                ✓ {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+            <section class="info-panel">
+                <div class="panel-head">
+                    <h3>Supplier List</h3>
+                    <span>{{ suppliers|length }} Suppliers</span>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Supplier ID</th>
+                                <th>Name</th>
+                                <th>Contact Person</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>City</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for supplier in suppliers %}
+                            <tr>
+                                <td>{{ supplier.supplier_id }}</td>
+                                <td><strong>{{ supplier.name }}</strong></td>
+                                <td>{{ supplier.contact_person }}</td>
+                                <td>{{ supplier.phone }}</td>
+                                <td>{{ supplier.email }}</td>
+                                <td>{{ supplier.city }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% if not suppliers %}
+                            <tr>
+                                <td colspan="6" style="text-align: center;">No suppliers found.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

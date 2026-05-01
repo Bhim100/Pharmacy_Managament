@@ -56,12 +56,14 @@ def fetch_customers():
             cursor.execute(
                 """
                 SELECT
-                    customer_id,
-                    customer_name,
-                    phone,
-                    NVL(loyalty_points, 0) AS loyalty_points,
-                    TO_CHAR(created_at, 'DD Mon YYYY') AS last_purchase
-                FROM customers
+                    c.customer_id,
+                    c.customer_name,
+                    c.phone,
+                    NVL(c.loyalty_points, 0) AS loyalty_points,
+                    TO_CHAR(NVL(MAX(b.bill_date), c.created_at), 'DD Mon YYYY') AS last_purchase
+                FROM customers c
+                LEFT JOIN bills b ON c.customer_id = b.customer_id
+                GROUP BY c.customer_id, c.customer_name, c.phone, c.loyalty_points, c.created_at
                 ORDER BY customer_id
                 """
             )
@@ -96,16 +98,19 @@ def search_customers(query):
             cursor.execute(
                 """
                 SELECT
-                    customer_id,
-                    customer_name,
-                    NVL(phone, '-') AS phone,
-                    NVL(loyalty_points, 0) AS loyalty_points,
-                    TO_CHAR(created_at, 'DD Mon YYYY') AS last_purchase
-                FROM customers
+                    c.customer_id,
+                    c.customer_name,
+                    NVL(c.phone, '-') AS phone,
+                    NVL(c.loyalty_points, 0) AS loyalty_points,
+                    TO_CHAR(NVL(MAX(b.bill_date), c.created_at), 'DD Mon YYYY') AS last_purchase
+                FROM customers c
+                LEFT JOIN bills b ON c.customer_id = b.customer_id
                 WHERE :search_text IS NULL
-                   OR LOWER(customer_name) LIKE '%' || :search_text || '%'
-                   OR LOWER(NVL(phone, '')) LIKE '%' || :search_text || '%'
-                ORDER BY customer_name
+                   OR LOWER(c.customer_name) LIKE '%' || :search_text || '%'
+                   OR LOWER(NVL(c.phone, '')) LIKE '%' || :search_text || '%'
+                   OR TO_CHAR(c.customer_id) LIKE '%' || :search_text || '%'
+                GROUP BY c.customer_id, c.customer_name, c.phone, c.loyalty_points, c.created_at
+                ORDER BY c.customer_name
                 """,
                 search_text=clean_query or None,
             )
